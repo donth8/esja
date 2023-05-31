@@ -75,18 +75,30 @@ func NewEntityWithSnapshot[T Entity[T]](
 
 // NewEntity instantiates a new T with the given events applied to it.
 // At the same time the entity's internal Stream is initialised,
-// so it can record new upcoming events.
+// so it can record new upcoming stream.
 func NewEntity[T Entity[T]](
 	id string,
-	events []VersionedEvent[T],
+	eventsSlice []VersionedEvent[T],
 ) (*T, error) {
-	if len(events) == 0 {
-		return nil, fmt.Errorf("no stream to load")
-	}
+	return NewEntityWithStringType(id, "", eventsSlice)
+}
 
+// NewEntityWithStringType instantiates a new T with the given
+// stream type and events applied to it.
+// At the same time the entity's internal Stream is initialised,
+// so it can record new upcoming stream.
+func NewEntityWithStringType[T Entity[T]](
+	id string,
+	streamType string,
+	eventsSlice []VersionedEvent[T],
+) (*T, error) {
 	var t T
 
-	stream, err := NewStream[T](id)
+	stream, err := newStream(
+		id,
+		streamType,
+		eventsSlice,
+	)
 	if err != nil {
 		return nil, err
 	}
